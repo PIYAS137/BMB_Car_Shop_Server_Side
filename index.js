@@ -36,11 +36,7 @@ async function run() {
     const carsCollection = client.db('brandDB').collection('carsCollection');
 
 
-    app.post('/category',async(req,res)=>{
-      const data = req.body;
-      const result = await categoryCollection.insertOne(data);
-      res.send(result)
-    })
+
 
     // get all category data
     app.get('/category',async(req,res)=>{
@@ -89,7 +85,6 @@ async function run() {
       const filter = {_id : new ObjectId(id)};
       const options = {upsert:true}
       const updatedData = req.body;
-      console.log(updatedData);
       const updatedDocument ={
         $set:{
           modelName:updatedData.modelName,
@@ -113,8 +108,25 @@ async function run() {
       res.send(result)
     })
 
+// temporary for category update --------------------------->>>>>>>>>>>>
+    app.patch('/category',async(req,res)=>{
 
-
+      const options = {upsert : true}
+      const updatedData = req.body;
+      const filter = {brand:updatedData.brand};
+      const updaDoc = {
+        $set :{
+          brand: updatedData.brand,
+          images: updatedData.images,
+          logo:updatedData.logo,
+          since:updatedData.since,
+          width:updatedData.width,
+          discount:updatedData.disco,
+        }
+      }
+      const result = await categoryCollection.updateOne(filter,updaDoc,options)
+      res.send(result)
+    })
 
 
 
