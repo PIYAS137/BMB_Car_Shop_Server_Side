@@ -44,6 +44,13 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result)
     })
+
+    // get all product data 
+    app.get('/all',async(req,res)=>{
+      const cursor = carsCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
     // find one brand data 
     app.get('/:brandName',async(req,res)=>{
       const brandName = req.params.brandName;
@@ -108,25 +115,25 @@ async function run() {
       res.send(result)
     })
 
-// temporary for category update --------------------------->>>>>>>>>>>>
-    app.patch('/category',async(req,res)=>{
+// // temporary for category update --------------------------->>>>>>>>>>>>
+//     app.patch('/category',async(req,res)=>{
 
-      const options = {upsert : true}
-      const updatedData = req.body;
-      const filter = {brand:updatedData.brand};
-      const updaDoc = {
-        $set :{
-          brand: updatedData.brand,
-          images: updatedData.images,
-          logo:updatedData.logo,
-          since:updatedData.since,
-          width:updatedData.width,
-          discount:updatedData.disco,
-        }
-      }
-      const result = await categoryCollection.updateOne(filter,updaDoc,options)
-      res.send(result)
-    })
+//       const options = {upsert : true}
+//       const updatedData = req.body;
+//       const filter = {brand:updatedData.brand};
+//       const updaDoc = {
+//         $set :{
+//           brand: updatedData.brand,
+//           images: updatedData.images,
+//           logo:updatedData.logo,
+//           since:updatedData.since,
+//           width:updatedData.width,
+//           discount:updatedData.disco,
+//         }
+//       }
+//       const result = await categoryCollection.updateOne(filter,updaDoc,options)
+//       res.send(result)
+//     })
 
 
 
