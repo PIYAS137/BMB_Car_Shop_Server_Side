@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const express = require("express");
 const app = express();
@@ -33,6 +33,7 @@ async function run() {
     await client.connect();
 
     const categoryCollection = client.db('brandDB').collection('categoryCollection');
+    const carsCollection = client.db('brandDB').collection('carsCollection');
 
 
     app.post('/category',async(req,res)=>{
@@ -41,6 +42,7 @@ async function run() {
       res.send(result)
     })
 
+    // get all category data
     app.get('/category',async(req,res)=>{
       const cursor = categoryCollection.find();
       const result = await cursor.toArray();
@@ -54,14 +56,62 @@ async function run() {
       res.send(result);
     })
 
-    // get data by brand name
-    // app.get('/:brand',async(req,res)=>{
-    //   const brand = req.params.brand;
+    // add cars for database
+    app.post('/addcars',async(req,res)=>{
+      const data = req.body;
+      const result = await carsCollection.insertOne(data)
+      res.send(result)
+    })
+    // get category wise cars form database 
+    app.get('/category/:brand',async(req,res)=>{
+      const brandName = req.params.brand;
+      const cursor = carsCollection.find({company:brandName})
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+    // get all cars from database
+    app.get('/getCars',async(req,res)=>{
+      const cursor = carsCollection.find()
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+    // get one car details 
+    app.get('/getcar/:sid',async(req,res)=>{
+        const id = req.params.sid;
+        const query = {_id: new ObjectId(id)}
+        const result = await carsCollection.findOne(query)
+        res.send(result)
+    })
 
-    //   const cursor = allcarsCollection.find({brand:brand})
-    //   const result = await cursor.toArray()
-    //   res.send(result);
-    // })
+    // update one car data 
+    app.put('/:sid',async(req,res)=>{
+      const id = req.params.sid;
+      const filter = {_id : new ObjectId(id)};
+      const options = {upsert:true}
+      const updatedData = req.body;
+      console.log(updatedData);
+      const updatedDocument ={
+        $set:{
+          modelName:updatedData.modelName,
+          img:updatedData.img,
+          price:updatedData.price,
+          rating:updatedData.rating,
+          description:updatedData.description,
+          milage:updatedData.milage,
+          fuelType:updatedData.fuelType,
+          company:updatedData.company,
+          fuelTankCapacity:updatedData.fuelTankCapacity,
+          seatingCapacity:updatedData.seatingCapacity,
+          release:updatedData.release,
+          speed:updatedData.speed,
+          cylinder:updatedData.cylinder,
+          torque:updatedData.torque,
+          hp:updatedData.hp
+        }
+      }
+      const result = await carsCollection.updateOne(filter,updatedDocument,options)
+      res.send(result)
+    })
 
 
 
