@@ -34,6 +34,7 @@ async function run() {
 
     const categoryCollection = client.db('brandDB').collection('categoryCollection');
     const carsCollection = client.db('brandDB').collection('carsCollection');
+    const cartCollection = client.db('brandDB').collection('cartCollection');
 
 
 
@@ -43,7 +44,6 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result)
     })
-
     // get all product data 
     app.get('/all',async(req,res)=>{
       const cursor = carsCollection.find()
@@ -57,7 +57,6 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result);
     })
-
     // add cars for database
     app.post('/addcars',async(req,res)=>{
       const data = req.body;
@@ -118,6 +117,25 @@ async function run() {
       const id = req.params.sid;
       const query = {_id : new ObjectId(id)};
       const result = await carsCollection.deleteOne(query)
+      res.send(result)
+    })
+    // post operation for cart 
+    app.post('/cart/post',async(req,res)=>{
+      const data = req.body;
+      const result = await cartCollection.insertOne(data)
+      res.send(result); 
+    })
+    // get operation for cart
+    app.get('/cart/get',async(req,res)=>{
+      const cursor = cartCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+    // delete operation for cart 
+    app.delete('/cart/:sid',async(req,res)=>{
+      const id = req.params.sid;
+      const query = {_id : new ObjectId(id)}
+      const result = await cartCollection.deleteOne(query)
       res.send(result)
     })
 
