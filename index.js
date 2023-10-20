@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 5020;
+require('dotenv').config()
 
 
 // middleWare ---
@@ -11,12 +12,11 @@ app.use(cors())
 app.use(express.json())
 
 
-// bIOh4nL17wu2jm7g
-// automotivebrandwebsite
+console.log(process.env.DB_USERNAME);
 
 // -----------------------------------------------------------------mongoDB---------------------------------------------------//
 
-const uri = "mongodb+srv://automotivebrandwebsite:bIOh4nL17wu2jm7g@cluster0.frg7rqf.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_SECRET_KEY}@cluster0.frg7rqf.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -34,7 +34,6 @@ async function run() {
 
     const categoryCollection = client.db('brandDB').collection('categoryCollection');
     const carsCollection = client.db('brandDB').collection('carsCollection');
-
 
 
 
@@ -114,26 +113,13 @@ async function run() {
       const result = await carsCollection.updateOne(filter,updatedDocument,options)
       res.send(result)
     })
-
-// // temporary for category update --------------------------->>>>>>>>>>>>
-//     app.patch('/category',async(req,res)=>{
-
-//       const options = {upsert : true}
-//       const updatedData = req.body;
-//       const filter = {brand:updatedData.brand};
-//       const updaDoc = {
-//         $set :{
-//           brand: updatedData.brand,
-//           images: updatedData.images,
-//           logo:updatedData.logo,
-//           since:updatedData.since,
-//           width:updatedData.width,
-//           discount:updatedData.disco,
-//         }
-//       }
-//       const result = await categoryCollection.updateOne(filter,updaDoc,options)
-//       res.send(result)
-//     })
+    // delete card product from database 
+    app.delete('/del/:sid',async(req,res)=>{
+      const id = req.params.sid;
+      const query = {_id : new ObjectId(id)};
+      const result = await carsCollection.deleteOne(query)
+      res.send(result)
+    })
 
 
 
@@ -151,7 +137,7 @@ run().catch(console.dir);
 
 
 app.get('/',(req,res)=>{
-    res.send("Server is coming soon");
+    res.send("BMB Automotive server is coming soon...");
 })
 
 app.listen(port,()=>{
